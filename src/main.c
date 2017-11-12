@@ -33,9 +33,12 @@ void writeToFile(char *fileLoc, char *info)
 void pushToGit()
 {
     char cwd[1024];
-    getcwd(cwd, sizeof(cwd));
+    char *command;
+    getcwd(cwd, 1024);
     strcat(cwd, "/src/git_push.sh");
-    system("bash %s", cdw);
+    strcpy(command, "bash ");
+    strcat(command, cwd);
+    system(command);
 }
 
 int main()
@@ -90,6 +93,7 @@ int main()
         } while (curChar != EOF);
         fclose(fp);
     //}
+    pushToGit();
     return 0;
 }
 

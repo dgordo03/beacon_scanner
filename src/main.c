@@ -38,6 +38,7 @@ void pushToGit()
     strcat(cwd, "/src/git_push.sh");
     strcpy(command, "bash ");
     strcat(command, cwd);
+    printf("%s\n", command);
     system(command);
 }
 

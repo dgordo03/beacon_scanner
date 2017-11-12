@@ -1,1 +1,1 @@
-sudo hcidump [-a]
+sudo hcidump [-a] >> ~/dump.txt

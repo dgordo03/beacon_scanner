@@ -13,16 +13,16 @@ typedef struct {
 *Input: Beacon structure
 *Output: The distance as a float
 */
-float distance(Beacon beacon)
+/*float distance(Beacon beacon)
 {
 
-}
+}*/
 
 /*Data is written to a file at a specified location
 *Input: the location of the file, the information to be written to that file
 *Output: null
 */
-void writeToFile(char *fileLoc, char *info)
+/*void writeToFile(char *fileLoc, char *info)
 {
     FILE *fp;
     fp = fopen(fileLoc, "w");
@@ -40,7 +40,7 @@ void pushToGit()
     strcat(command, cwd);
     printf("%s\n", command);
     system(command);
-}
+}*/
 
 int main()
 {
@@ -58,11 +58,13 @@ int main()
     //{
         FILE *fp;
         fp = fopen(fileLoc, "r");
+        int asciiChar;
         char curChar;
         char curLine[100] = {'\0'};
         do
-        {
-            curChar = fgetc(fp);
+	{
+	    asciiChar = fgetc(fp);
+	    curChar = asciiChar;
             if (curChar != '\n')
             {
                curLine[index] = curChar;
@@ -86,16 +88,17 @@ int main()
                         token = strtok(NULL, ":");
                         beacon.rssi = atoi(token);
                         beacon_config = 0;
+			printf("%d\n", beacon.rssi);
                     }
                 }
                 index = 0;
                 memset(curLine, '\0', 100);
-            }
-        } while (curChar != EOF);
-        fclose(fp);
+	    }
+        } while (asciiChar != EOF);
+	fclose(fp);
     //}
-    pushToGit();
-    return 0;
+    //pushToGit();
+    //return 0;
 }
 
 /* This is how to print to the correct file

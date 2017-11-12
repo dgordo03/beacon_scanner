@@ -13,16 +13,16 @@ typedef struct {
 *Input: Beacon structure
 *Output: The distance as a float
 */
-/*float distance(Beacon beacon)
+float distance(Beacon beacon)
 {
 
-}*/
+}
 
 /*Data is written to a file at a specified location
 *Input: the location of the file, the information to be written to that file
 *Output: null
 */
-/*void writeToFile(char *fileLoc, char *info)
+void writeToFile(char *fileLoc, char *info)
 {
     FILE *fp;
     fp = fopen(fileLoc, "w");
@@ -32,15 +32,19 @@ typedef struct {
 
 void pushToGit()
 {
+    printf("a\n");
     char cwd[1024];
-    char *command;
+    char command[1024];
     getcwd(cwd, 1024);
+    printf("%s\n", cwd);
     strcat(cwd, "/src/git_push.sh");
+    printf("%s\n",cwd);
     strcpy(command, "bash ");
+    printf("%s\n",command);
     strcat(command, cwd);
     printf("%s\n", command);
     system(command);
-}*/
+}
 
 int main()
 {
@@ -97,7 +101,7 @@ int main()
         } while (asciiChar != EOF);
 	fclose(fp);
     //}
-    //pushToGit();
+    pushToGit();
     //return 0;
 }
 

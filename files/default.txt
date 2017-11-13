@@ -1,6 +1,1 @@
-Beacon {
-    int rssi = 51;
-    int row = 1;
-    int col = 5;
-    int beacon = 4;
-}
+'{"rssi":"51", "row":"1","col":"5","beacon":"4"}'

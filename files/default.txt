@@ -1,0 +1,6 @@
+Beacon {
+    int rssi = 51;
+    int row = 1;
+    int col = 5;
+    int beacon = 4;
+}

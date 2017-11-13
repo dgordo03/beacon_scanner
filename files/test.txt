@@ -1,3 +1,0 @@
-this is a test file to 
-figure out how to push to git
-automatically

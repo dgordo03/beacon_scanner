@@ -12,7 +12,7 @@ function loadData()
 
 function jsonParse(toParse)
 {
-   console.log(toParse);
    var obj = JSON.parse(toParse);
    console.log(obj); 
 }
+

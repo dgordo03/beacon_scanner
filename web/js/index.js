@@ -20,4 +20,4 @@ function jsonParse(toParse)
 
 setInterval(function () {
   loadData();
-}, 5000);
+}, 1000);

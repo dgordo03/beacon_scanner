@@ -20,5 +20,6 @@ function jsonParse(toParse)
 
 function updateData()
 {
-  setTimeout(loadData(), 5000);
+  loadData();
+  setTimeout(updateData(), 5000);
 }

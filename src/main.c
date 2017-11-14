@@ -33,6 +33,19 @@ int rssiTotal1;
 ParkingSpot parkingSpot;
 ConsistentSpot newSpot;
 
+
+void spotJSON(ParkingSpot spot, char *json)
+{
+    if (spot.isParked == 1)
+    { 
+        sprintf(json, "{\"parked\":\"true\",\"row\":\"%d\",\"column\":\"%d\"}", spot.row, spot.column);
+    }
+    else
+    {
+        sprintf(json, "{\"parked\":\"false\"}");
+    }
+}
+
 /*The distance from the BLE is calculated using the RSSI value
 *Input: Beacon structure
 *Output: The distance as a float
@@ -116,7 +129,7 @@ int newLocation(Beacon beacon)
 	{
 	    updateLocation = 1;
 	}
-	if (newSpot.distance <= 6.7)
+	if (newSpot.distance <= 6.7 && newSpot.distance > 0.0)
 	{
 	    parkingSpot.row = newSpot.row;
 	    parkingSpot.column = newSpot.column;
@@ -448,7 +461,9 @@ int main()
 		       newParkLoc = newLocation(beacon);
 		       if (newParkLoc == 1)
 		       {
-		           printf("new location\t%d\t%d\n", parkingSpot.row, parkingSpot.column);
+			   char data[100];
+			   spotJSON(parkingSpot, data);
+		           printf("%s\n",data);
 		       }
 		    }
 		}
@@ -466,7 +481,10 @@ int main()
 		       newParkLoc = newLocation(beacon);
 		       if (newParkLoc == 1)
 		       {
-		           printf("new location\t%d\t%d\n", parkingSpot.row, parkingSpot.column);
+			   //update the parking location data
+			   char data[100];
+			   spotJSON(parkingSpot, data);
+		           printf("%s\n",data);
 		       }
 		    }
 		}
@@ -476,8 +494,8 @@ int main()
 	    {
                 curBeacon[index] = curChar;
 	        index++;
-	    }   
-	    
+	    }
+	    sleep(0.1);
         } while (asciiChar != EOF);
 	fclose(fp);
     //}

@@ -41,12 +41,44 @@ void pushToGit()
     system(command);
 }
 
-int hexToDec(char *hex)
+char decToHexSingle(int dec)
 {
-    int length;
+    char hex;
+    if (dec == 15)
+    {
+        hex = 'F';
+    }
+    else if (dec == 14)
+    {
+        hex = 'E';
+    }
+    else if (dec == 13)
+    {
+        hex = 'D';
+    }
+    else if (dec == 12)
+    {
+        hex = 'C';
+    }
+    else if (dec == 11)
+    {
+        hex = 'B';
+    }
+    else if (dec == 10)
+    {
+        hex = 'A';
+    }
+    else
+    {
+        hex = dec + '0';
+    }
+    return hex;
+}
+
+int hexToDec(char *hex, int length)
+{
     int decimal;
     int i;
-    length = sizeof(hex)/sizeof(char);
     decimal = 0;
     for (i = 0; i < length; i++)
     {
@@ -89,6 +121,59 @@ int hexToDec(char *hex)
 	decimal += power * curHex;
     }
     return decimal;
+}
+
+int hexToDecSingle(char hex)
+{
+    int dec;
+    if (hex == 'A')
+    {
+        dec = 10;
+    }
+    else if (hex == 'B')
+    {
+        dec = 11;
+    }
+    else if (hex == 'C')
+    {
+        dec = 12;
+    }
+    else if (hex == 'D')
+    {
+        dec = 13;
+    }
+    else if (hex == 'E')
+    {
+        dec = 14;
+    }
+    else if (hex == 'F')
+    {
+        dec = 15;
+    }
+    else
+    {
+        dec = hex - '0';
+    }
+    return dec;
+}
+
+void twosComplementHex(char *hex, int length)
+{
+    char twosHex[100] = {'\0'};
+    int i;
+    for (i = 0; i < length; i++)
+    {
+	int temp;
+        int dec;
+	char newHex;
+	temp = hexToDecSingle(hex[i]);
+        dec = 15 - temp;
+	if (i == (length-1))
+	{
+	    dec += 1;
+	}
+	hex[i] = decToHexSingle(dec);
+    }
 }
 
 Beacon parseiBeacon(char *rawData)
@@ -166,8 +251,8 @@ Beacon parseiBeacon(char *rawData)
     if (boolRSSI == 2)
     {
 	    int i;
-	    iBeacon.major = hexToDec(major);
-	    iBeacon.minor = hexToDec(minor);
+	    iBeacon.major = hexToDec(major, 4);
+	    iBeacon.minor = hexToDec(minor, 4);
 	    printf("uuid : ");
 	    for (i = 0; i < 32; i++)
 	    {
@@ -177,15 +262,9 @@ Beacon parseiBeacon(char *rawData)
 	    printf("\n");
 	    printf("Major : %d\n", iBeacon.major);
 	    printf("Minor : %d\n", iBeacon.minor);
-            /*for (i = 0; i < 4; i++)
-	    {
-		    printf("%c", minor[i]);
-	    }
-	    printf("\nMinor : ");
-            for (i = 0; i < 4; i++)
-	    {
-		    printf("%c", major[i]);
-	    }*/
+	    twosComplementHex(rssi, 2);
+	    iBeacon.rssi = hexToDec(rssi, 2);
+	    printf("rssi : %d\n", iBeacon.rssi);
 	    printf("RSSI : ");
             for (i = 0; i < 2; i++)
 	    {

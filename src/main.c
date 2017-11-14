@@ -2,20 +2,29 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <math.h>
 typedef struct {
     int rssi;
     int major;
     int minor;
     char uuid[32];
+    int power;
+    int n;
 } Beacon;
 
 /*The distance from the BLE is calculated using the RSSI value
 *Input: Beacon structure
 *Output: The distance as a float
 */
-float distance(Beacon beacon)
+double distance(Beacon beacon)
 {
-
+    //N=2, P=12
+    //d= 10 ^ ((Rssi-P)/(10*N))
+    double dist;
+    double power;
+    power = ((double)beacon.rssi - (double)beacon.power) / (10 * 3);
+    dist = pow(10.00, power);
+    return dist;
 }
 
 /*Data is written to a file at a specified location
@@ -250,29 +259,20 @@ Beacon parseiBeacon(char *rawData)
     }
     if (boolRSSI == 2)
     {
-	    int i;
-	    iBeacon.major = hexToDec(major, 4);
-	    iBeacon.minor = hexToDec(minor, 4);
-	    printf("uuid : ");
-	    for (i = 0; i < 32; i++)
-	    {
-		    iBeacon.uuid[i] = uuid[i];
-		    printf("%c", iBeacon.uuid[i]);
-	    }
-	    printf("\n");
-	    printf("Major : %d\n", iBeacon.major);
-	    printf("Minor : %d\n", iBeacon.minor);
-	    twosComplementHex(rssi, 2);
-	    iBeacon.rssi = hexToDec(rssi, 2);
-	    printf("rssi : %d\n", iBeacon.rssi);
-	    printf("RSSI : ");
-            for (i = 0; i < 2; i++)
-	    {
-		    printf("%c", rssi[i]);
-	    }
-	    printf("\n");
+        
+	int i;
+        for (i = 0; i < 32; i++)
+	{
+	    iBeacon.uuid[i] = uuid[i];
+	}
+	iBeacon.major = hexToDec(major, 4);
+	iBeacon.minor = hexToDec(minor, 4);
+	twosComplementHex(rssi, 2);
+	iBeacon.rssi = hexToDec(rssi, 2);
+	iBeacon.power = 12;
+	iBeacon.n = 2;
+	printf("distance : %f\n", distance(iBeacon));
     }
-    printf("\n");
 }
 
 int main()

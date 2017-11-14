@@ -25,3 +25,10 @@ Added c file that reads the data and prints each line
 added function to that writes to a file
 added function that pushes the changes to github
 now gets the rssi value from all entries that have an rssi value
+
+######WEB
+index.html redirects to correct page
+
+Added blank page just to get AJAX working
+
+JS file that loads file from server added

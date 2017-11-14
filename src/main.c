@@ -6,7 +6,7 @@ typedef struct {
     int rssi;
     int major;
     int minor;
-    int uuid;
+    char uuid[32];
 } Beacon;
 
 /*The distance from the BLE is calculated using the RSSI value
@@ -47,7 +47,6 @@ int hexToDec(char *hex)
     int decimal;
     int i;
     length = sizeof(hex)/sizeof(char);
-    printf("length : %d\n", length);
     decimal = 0;
     for (i = 0; i < length; i++)
     {
@@ -87,12 +86,9 @@ int hexToDec(char *hex)
 	{
             power *= 16;
 	}
-	printf("to the power : %d\n", power);
-	printf("curHex : %d\n", curHex);
 	decimal += power * curHex;
     }
-	printf("dec : %d\n", decimal);
-    return 0;
+    return decimal;
 }
 
 Beacon parseiBeacon(char *rawData)
@@ -104,6 +100,7 @@ Beacon parseiBeacon(char *rawData)
     char minor[4] = {'\0'};
     char rssi[2] = {'\0'};
     int boolOne, boolTwo, boolThree, boolUUID, boolMajor, boolMinor, boolRSSI, garbage;
+    Beacon iBeacon;
     boolOne = 0;
     boolTwo = 0;
     boolThree = 0;
@@ -168,17 +165,19 @@ Beacon parseiBeacon(char *rawData)
     }
     if (boolRSSI == 2)
     {
-	    int returnVal;
-	    returnVal = hexToDec(major);
-	    returnVal = hexToDec(minor);
 	    int i;
+	    iBeacon.major = hexToDec(major);
+	    iBeacon.minor = hexToDec(minor);
 	    printf("uuid : ");
 	    for (i = 0; i < 32; i++)
 	    {
-		    printf("%c", uuid[i]);
+		    iBeacon.uuid[i] = uuid[i];
+		    printf("%c", iBeacon.uuid[i]);
 	    }
-	    printf("\nMajor : ");
-            for (i = 0; i < 4; i++)
+	    printf("\n");
+	    printf("Major : %d\n", iBeacon.major);
+	    printf("Minor : %d\n", iBeacon.minor);
+            /*for (i = 0; i < 4; i++)
 	    {
 		    printf("%c", minor[i]);
 	    }
@@ -186,8 +185,8 @@ Beacon parseiBeacon(char *rawData)
             for (i = 0; i < 4; i++)
 	    {
 		    printf("%c", major[i]);
-	    }
-	    printf("\nRSSI : ");
+	    }*/
+	    printf("RSSI : ");
             for (i = 0; i < 2; i++)
 	    {
 		    printf("%c", rssi[i]);

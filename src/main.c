@@ -169,6 +169,16 @@ void pushToGit()
     system(command);
 }
 
+void pullGit()
+{
+    char cwd[1024];
+    char command[1024];
+    getcwd(cwd, 1024);
+    strcat(cwd, "/src/git_pull.sh");
+    strcpy(command, "bash ");
+    strcat(command, cwd);
+    system(command);
+}
 char decToHexSingle(int dec)
 {
     char hex;
@@ -426,7 +436,7 @@ int main()
     int beacon_config;
     Beacon beacon;
     fileLoc = getenv("HOME");
-    fileName = "/test.txt";
+    fileName = "/dump.txt";
     strcat(fileLoc, fileName);
     index = 0;
     beacon_config = 0;
@@ -438,6 +448,9 @@ int main()
     newSpot.column = -1;
     newSpot.count = 0;
     newSpot.distance = 0.0;
+    pushToGit();
+    pullGit();
+    pushToGit();
     //while (1)
     //{
         FILE *fp;
@@ -463,7 +476,12 @@ int main()
 		       {
 			   char data[100];
 			   spotJSON(parkingSpot, data);
-		           printf("%s\n",data);
+			   char cwd[1024];
+			   spotJSON(parkingSpot, data);
+			   getcwd(cwd, 1024);
+			   strcat(cwd, "/files/beacon.txt");
+			   writeToFile(cwd, data);
+			   pushToGit();
 		       }
 		    }
 		}
@@ -483,8 +501,12 @@ int main()
 		       {
 			   //update the parking location data
 			   char data[100];
+			   char cwd[1024];
 			   spotJSON(parkingSpot, data);
-		           printf("%s\n",data);
+			   getcwd(cwd, 1024);
+			   strcat(cwd, "/files/beacon.txt");
+			   writeToFile(cwd, data);
+                           pushToGit();
 		       }
 		    }
 		}
@@ -507,6 +529,6 @@ int main()
 /* This is how to print to the correct file
 char cwd[1024];
 getcwd(cwd, 1024);
-strcat(cwd, "/files/beacon.txt");
-writeToFile(cwd, token);
+strcat(cwd, "/files/fileName");
+writeToFile(cwd, "string");
 */

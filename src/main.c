@@ -12,10 +12,26 @@ typedef struct {
     int n;
 } Beacon;
 
+typedef struct {
+    int row;
+    int column;
+    double distance;
+    int isParked;
+} ParkingSpot;
+
+typedef struct {
+    int row;
+    int column;
+    int count;
+    double distance;
+} ConsistentSpot;
+
 int beaconCount2;
 int rssiTotal2;
 int beaconCount1;
 int rssiTotal1;
+ParkingSpot parkingSpot;
+ConsistentSpot newSpot;
 
 /*The distance from the BLE is calculated using the RSSI value
 *Input: Beacon structure
@@ -32,6 +48,91 @@ double distance(Beacon beacon)
     return dist;
 }
 
+int newLocation(Beacon beacon)
+{
+    // 6.7 x 2.6 m
+    // make it so that the results have to be 5 consecutive results that all agree
+    double dist;
+    int updateLocation;
+    dist = distance(beacon);
+   // printf("distance : %f\t", dist);
+   // printf("beacon : %d\n", beacon.minor);
+    updateLocation = 0;
+    if (dist <= 6.7)
+    {
+        if (beacon.minor == newSpot.row)
+	{
+            if (newSpot.distance > dist)
+            {
+	        newSpot.distance = dist;
+	        newSpot.row = beacon.minor;
+	        newSpot.column = beacon.major;
+	    }
+            newSpot.count++;
+	}
+	else if (newSpot.row == -1)
+	{
+	    newSpot.distance = dist;
+	    newSpot.row = beacon.minor;
+	    newSpot.column = beacon.major;
+	    newSpot.count = 1;
+	}
+	else
+	{
+            if (dist < newSpot.distance)
+	    {
+	        newSpot.count = 1;
+		newSpot.column = beacon.major;
+		newSpot.row = beacon.minor;
+		newSpot.distance = dist;
+	    }
+	    else
+	    {
+	        newSpot.count++;
+	    }
+	}
+    }
+    else
+    {
+	if (newSpot.row == -1)
+	{
+	    newSpot.count++;
+	}
+	else if (beacon.minor != newSpot.row)
+	{
+	    newSpot.count++;
+	}
+	else
+	{
+	    newSpot.count = 0;
+	    newSpot.column = -1;
+	    newSpot.row = -1;
+	    newSpot.distance = 0.0;
+	}
+    }
+    if (newSpot.count >= 5)
+    {
+	if (parkingSpot.row != newSpot.row)
+	{
+	    updateLocation = 1;
+	}
+	if (newSpot.distance <= 6.7)
+	{
+	    parkingSpot.row = newSpot.row;
+	    parkingSpot.column = newSpot.column;
+	    parkingSpot.isParked = 1;
+	    parkingSpot.distance = newSpot.distance;
+	}
+	else
+	{
+	    parkingSpot.row = -1;
+	    parkingSpot.column = -1;
+	    parkingSpot.isParked = 0;
+	    parkingSpot.distance = 0.0;
+	}
+    }
+    return updateLocation;
+}
 /*Data is written to a file at a specified location
 *Input: the location of the file, the information to be written to that file
 *Output: null
@@ -266,6 +367,7 @@ Beacon parseiBeacon(char *rawData)
     {
         
 	int i;
+	int updateSpot;
         for (i = 0; i < 32; i++)
 	{
 	    iBeacon.uuid[i] = uuid[i];
@@ -276,6 +378,11 @@ Beacon parseiBeacon(char *rawData)
 	iBeacon.rssi = hexToDec(rssi, 2);
 	iBeacon.power = 62;
 	iBeacon.n = 2;
+	updateSpot = newLocation(iBeacon);
+	if (updateSpot == 1)
+	{
+	    printf("newLocation : %d : %d : %f\n", parkingSpot.row, parkingSpot.column, parkingSpot.distance);
+	}
 	if (iBeacon.minor == 1)
 	{
 	    beaconCount1++;
@@ -305,6 +412,14 @@ int main()
     strcat(fileLoc, fileName);
     index = 0;
     beacon_config = 0;
+    parkingSpot.isParked = 0;
+    parkingSpot.row = -1;
+    parkingSpot.column = -1;
+    parkingSpot.distance = 0.0;
+    newSpot.row = -1;
+    newSpot.column = -1;
+    newSpot.count = 0;
+    newSpot.distance = 0.0;
     //while (1)
     //{
         FILE *fp;

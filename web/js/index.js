@@ -18,9 +18,6 @@ function jsonParse(toParse)
    console.log(obj);
 }
 
-function updateData()
-{
+setInterval(function () {
   loadData();
-}
-
-setInterval(updateData(), 5000);
+}, 5000);

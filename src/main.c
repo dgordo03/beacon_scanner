@@ -123,7 +123,7 @@ int newLocation(Beacon beacon)
 	    newSpot.distance = 0.0;
 	}
     }
-    if (newSpot.count >= 10)
+    if (newSpot.count >= 100)
     {
 	if (parkingSpot.row != newSpot.row)
 	{
@@ -481,7 +481,8 @@ int main()
 			   getcwd(cwd, 1024);
 			   strcat(cwd, "/files/beacon.txt");
 			   writeToFile(cwd, data);
-			   pushToGit();
+			   //pushToGit();
+			   printf("%s\n",data);
 		       }
 		    }
 		}
@@ -506,7 +507,8 @@ int main()
 			   getcwd(cwd, 1024);
 			   strcat(cwd, "/files/beacon.txt");
 			   writeToFile(cwd, data);
-                           pushToGit();
+                           //pushToGit();
+			   printf("%s\n",data);
 		       }
 		    }
 		}

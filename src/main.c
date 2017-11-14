@@ -123,7 +123,7 @@ int newLocation(Beacon beacon)
 	    newSpot.distance = 0.0;
 	}
     }
-    if (newSpot.count >= 5)
+    if (newSpot.count >= 10)
     {
 	if (parkingSpot.row != newSpot.row)
 	{
@@ -448,9 +448,9 @@ int main()
     newSpot.column = -1;
     newSpot.count = 0;
     newSpot.distance = 0.0;
-    pushToGit();
-    pullGit();
-    pushToGit();
+    //pushToGit();
+    //pullGit();
+    //pushToGit();
     //while (1)
     //{
         FILE *fp;

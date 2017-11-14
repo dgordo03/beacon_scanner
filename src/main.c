@@ -481,8 +481,7 @@ int main()
 			   getcwd(cwd, 1024);
 			   strcat(cwd, "/files/beacon.txt");
 			   writeToFile(cwd, data);
-			   //pushToGit();
-			   printf("%s\n",data);
+			   pushToGit();
 		       }
 		    }
 		}
@@ -507,8 +506,7 @@ int main()
 			   getcwd(cwd, 1024);
 			   strcat(cwd, "/files/beacon.txt");
 			   writeToFile(cwd, data);
-                           //pushToGit();
-			   printf("%s\n",data);
+                           pushToGit();
 		       }
 		    }
 		}

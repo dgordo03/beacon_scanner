@@ -1,5 +1,5 @@
 all:
-	gcc -o run/scan src/main.c
+	gcc -o run/scan -lm src/main.c
 
 clean:
 	$(RM) run/scan

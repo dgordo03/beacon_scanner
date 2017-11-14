@@ -309,6 +309,11 @@ Beacon parseiBeacon(char *rawData)
     boolMinor = 0;
     boolRSSI = 0;
     garbage = 0;
+    iBeacon.minor = -1;
+    iBeacon.rssi = -1;
+    iBeacon.major = -1;
+    iBeacon.power = -1;
+    iBeacon.n = -1;
     token = strtok(rawData, " \n");
     while (token != NULL)
     {
@@ -365,7 +370,6 @@ Beacon parseiBeacon(char *rawData)
     }
     if (boolRSSI == 2)
     {
-        
 	int i;
 	int updateSpot;
         for (i = 0; i < 32; i++)
@@ -378,8 +382,8 @@ Beacon parseiBeacon(char *rawData)
 	iBeacon.rssi = hexToDec(rssi, 2);
 	iBeacon.power = 62;
 	iBeacon.n = 2;
-	updateSpot = newLocation(iBeacon);
-	if (updateSpot == 1)
+	//updateSpot = newLocation(iBeacon);
+	/*if (updateSpot == 1)
 	{
 	    printf("newLocation : %d : %d : %f\n", parkingSpot.row, parkingSpot.column, parkingSpot.distance);
 	}
@@ -392,8 +396,9 @@ Beacon parseiBeacon(char *rawData)
 	{
 		beaconCount2++;
 		rssiTotal2 += iBeacon.rssi;
-	}
+	}*/
     }
+    return iBeacon;
 }
 
 int main()
@@ -427,6 +432,7 @@ int main()
         int asciiChar;
 	int iBeaconBool = 0;
         char curChar;
+	int newParkLoc;
         char curBeacon[500] = {'\0'};
         do
 	{
@@ -436,7 +442,15 @@ int main()
 	    {
                 if (iBeaconBool == 1)
 		{
-	            parseiBeacon(curBeacon);
+	            beacon = parseiBeacon(curBeacon);
+		    if (beacon.minor > -1)
+		    {
+		       newParkLoc = newLocation(beacon);
+		       if (newParkLoc == 1)
+		       {
+		           printf("new location\t%d\t%d\n", parkingSpot.row, parkingSpot.column);
+		       }
+		    }
 		}
 		iBeaconBool = 1;
 		index = 0;
@@ -444,9 +458,17 @@ int main()
 	    }
 	    else if (asciiChar == '<')
 	    {
-	        if (iBeaconBool == 1)
+                if (iBeaconBool == 1)
 		{
-	            parseiBeacon(curBeacon);
+	            beacon = parseiBeacon(curBeacon);
+		    if (beacon.minor > -1)
+		    {
+		       newParkLoc = newLocation(beacon);
+		       if (newParkLoc == 1)
+		       {
+		           printf("new location\t%d\t%d\n", parkingSpot.row, parkingSpot.column);
+		       }
+		    }
 		}
 	        iBeaconBool = 0;
 	    }

@@ -12,6 +12,11 @@ typedef struct {
     int n;
 } Beacon;
 
+int beaconCount2;
+int rssiTotal2;
+int beaconCount1;
+int rssiTotal1;
+
 /*The distance from the BLE is calculated using the RSSI value
 *Input: Beacon structure
 *Output: The distance as a float
@@ -22,7 +27,7 @@ double distance(Beacon beacon)
     //d= 10 ^ ((Rssi-P)/(10*N))
     double dist;
     double power;
-    power = ((double)beacon.rssi - (double)beacon.power) / (10 * 3);
+    power = ((double)beacon.rssi - (double)beacon.power) / (10 * (double)beacon.n);
     dist = pow(10.00, power);
     return dist;
 }
@@ -269,14 +274,27 @@ Beacon parseiBeacon(char *rawData)
 	iBeacon.minor = hexToDec(minor, 4);
 	twosComplementHex(rssi, 2);
 	iBeacon.rssi = hexToDec(rssi, 2);
-	iBeacon.power = 12;
+	iBeacon.power = 62;
 	iBeacon.n = 2;
-	printf("distance : %f\n", distance(iBeacon));
+	if (iBeacon.minor == 1)
+	{
+	    beaconCount1++;
+            rssiTotal1 += iBeacon.rssi;
+	}
+	else if (iBeacon.minor == 2)
+	{
+		beaconCount2++;
+		rssiTotal2 += iBeacon.rssi;
+	}
     }
 }
 
 int main()
 {
+	beaconCount1=0;
+	beaconCount2=0;
+	rssiTotal1=0;
+	rssiTotal2=0;
     char *fileLoc;
     char *fileName;
     int index;
@@ -326,6 +344,8 @@ int main()
         } while (asciiChar != EOF);
 	fclose(fp);
     //}
+    printf("rssi 1 avg : %f\n", (double)rssiTotal1/(double)beaconCount1);
+    printf("rssi 2 avg : %f\n", (double)rssiTotal2/(double)beaconCount2);
     return 0;
 }
 

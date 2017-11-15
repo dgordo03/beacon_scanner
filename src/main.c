@@ -37,7 +37,7 @@ ConsistentSpot newSpot;
 void spotJSON(ParkingSpot spot, char *json)
 {
     if (spot.isParked == 1)
-    { 
+    {
         sprintf(json, "{\"parked\":\"true\",\"row\":\"%d\",\"column\":\"%d\"}", spot.row, spot.column);
     }
     else
@@ -158,27 +158,6 @@ void writeToFile(char *fileLoc, char *info)
     fclose(fp);
 }
 
-void pushToGit()
-{
-    char cwd[1024];
-    char command[1024];
-    getcwd(cwd, 1024);
-    strcat(cwd, "/src/git_push.sh");
-    strcpy(command, "bash ");
-    strcat(command, cwd);
-    system(command);
-}
-
-void pullGit()
-{
-    char cwd[1024];
-    char command[1024];
-    getcwd(cwd, 1024);
-    strcat(cwd, "/src/git_pull.sh");
-    strcpy(command, "bash ");
-    strcat(command, cwd);
-    system(command);
-}
 char decToHexSingle(int dec)
 {
     char hex;
@@ -405,21 +384,6 @@ Beacon parseiBeacon(char *rawData)
 	iBeacon.rssi = hexToDec(rssi, 2);
 	iBeacon.power = 62;
 	iBeacon.n = 2;
-	//updateSpot = newLocation(iBeacon);
-	/*if (updateSpot == 1)
-	{
-	    printf("newLocation : %d : %d : %f\n", parkingSpot.row, parkingSpot.column, parkingSpot.distance);
-	}
-	if (iBeacon.minor == 1)
-	{
-	    beaconCount1++;
-            rssiTotal1 += iBeacon.rssi;
-	}
-	else if (iBeacon.minor == 2)
-	{
-		beaconCount2++;
-		rssiTotal2 += iBeacon.rssi;
-	}*/
     }
     return iBeacon;
 }
@@ -448,9 +412,7 @@ int main()
     newSpot.column = -1;
     newSpot.count = 0;
     newSpot.distance = 0.0;
-    //pushToGit();
-    //pullGit();
-    //pushToGit();
+
     //while (1)
     //{
         FILE *fp;
@@ -481,7 +443,6 @@ int main()
 			   getcwd(cwd, 1024);
 			   strcat(cwd, "/files/beacon.txt");
 			   writeToFile(cwd, data);
-			   pushToGit();
 		       }
 		    }
 		}
@@ -506,7 +467,6 @@ int main()
 			   getcwd(cwd, 1024);
 			   strcat(cwd, "/files/beacon.txt");
 			   writeToFile(cwd, data);
-                           pushToGit();
 		       }
 		    }
 		}

@@ -8,13 +8,16 @@ function loadData()
            jsonParse(xhttp.responseText);
         }
     };
-    xhttp.open('get', 'https://dgordo03.github.io/beacon_scanner/files/default.txt');
+    xhttp.open('get', 'https://raw.githubusercontent.com/dgordo03/beacon_scanner/master/files/beacon.txt');
     xhttp.send();
 }
 
 function jsonParse(toParse)
 {
    var obj = JSON.parse(toParse);
-   console.log(obj); 
+   console.log(obj);
 }
 
+setInterval(function () {
+  loadData();
+}, 1000);

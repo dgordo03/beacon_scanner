@@ -3,12 +3,6 @@
 hcidump must be installed
 sudo apt-get install bluez-hcidump
 
-ssh must be set up for the push to work in pushToGit() (main.c)
-https://help.github.com/articles/connecting-to-github-with-ssh/
-
-set the git push url to use that ssh key
-git remote set-url origin git+ssh://git@github.com/username/repo.git
-
 ######
 
 #scan.sh

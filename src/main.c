@@ -34,15 +34,15 @@ ParkingSpot parkingSpot;
 ConsistentSpot newSpot;
 
 
-void spotJSON(ParkingSpot spot, char *json)
+void formatString(ParkingSpot spot, char *json)
 {
     if (spot.isParked == 1)
     {
-        sprintf(json, "{\"parked\":\"true\",\"row\":\"%d\",\"column\":\"%d\"}", spot.row, spot.column);
+        sprintf(json, "parked=true,row=%d,column=%d", spot.row, spot.column);
     }
     else
     {
-        sprintf(json, "{\"parked\":\"false\"}");
+        sprintf(json, "parked=false");
     }
 }
 
@@ -68,8 +68,8 @@ int newLocation(Beacon beacon)
     double dist;
     int updateLocation;
     dist = distance(beacon);
-   // printf("distance : %f\t", dist);
-   // printf("beacon : %d\n", beacon.minor);
+    //printf("distance : %f\t", dist);
+    //printf("beacon : %d\n", beacon.minor);
     updateLocation = 0;
     if (dist <= 6.7)
     {
@@ -123,7 +123,8 @@ int newLocation(Beacon beacon)
 	    newSpot.distance = 0.0;
 	}
     }
-    if (newSpot.count >= 100)
+
+    if (newSpot.count >= 15)
     {
 	if (parkingSpot.row != newSpot.row)
 	{
@@ -145,17 +146,6 @@ int newLocation(Beacon beacon)
 	}
     }
     return updateLocation;
-}
-/*Data is written to a file at a specified location
-*Input: the location of the file, the information to be written to that file
-*Output: null
-*/
-void writeToFile(char *fileLoc, char *info)
-{
-    FILE *fp;
-    fp = fopen(fileLoc, "w");
-    fprintf(fp, "%s", info);
-    fclose(fp);
 }
 
 char decToHexSingle(int dec)
@@ -437,13 +427,14 @@ int main()
 		       if (newParkLoc == 1)
 		       {
                            char data[100];
-                           spotJSON(parkingSpot, data);
+                           formatString(parkingSpot, data);
                            char cwd[1024];
-                           spotJSON(parkingSpot, data);
+			   char cmd[1024];
                            getcwd(cwd, 1024);
                            strcat(cwd, "/files/beacon.txt");
-                           writeToFile(cwd, data);
-                           system("python src/updateFirebase.py");
+			   sprintf(cmd, "python src/updateFirebase.py %s %s", "car1", data);
+                           //writeToFile(cwd, data);
+                           system(cmd);
 		       }
 		    }
 		}
@@ -464,11 +455,14 @@ int main()
 			   //update the parking location data
 			   char data[100];
 			   char cwd[1024];
-			   spotJSON(parkingSpot, data);
+			   char cmd[1024];
+			   formatString(parkingSpot, data);
 			   getcwd(cwd, 1024);
 			   strcat(cwd, "/files/beacon.txt");
-			   writeToFile(cwd, data);
-                           system("python src/updateFirebase.py");
+			   //writeToFile(cwd, data);
+			   sprintf(cmd, "python src/updateFirebase.py %s %s", "car1", data);
+                           //system("python src/updateFirebase.py");
+                           system(cmd);
 		       }
 		    }
 		}

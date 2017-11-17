@@ -390,10 +390,10 @@ Beacon parseiBeacon(char *rawData)
 
 int main()
 {
-	beaconCount1=0;
-	beaconCount2=0;
-	rssiTotal1=0;
-	rssiTotal2=0;
+    beaconCount1=0;
+    beaconCount2=0;
+    rssiTotal1=0;
+    rssiTotal2=0;
     char *fileLoc;
     char *fileName;
     int index;
@@ -436,13 +436,14 @@ int main()
 		       newParkLoc = newLocation(beacon);
 		       if (newParkLoc == 1)
 		       {
-			   char data[100];
-			   spotJSON(parkingSpot, data);
-			   char cwd[1024];
-			   spotJSON(parkingSpot, data);
-			   getcwd(cwd, 1024);
-			   strcat(cwd, "/files/beacon.txt");
-			   writeToFile(cwd, data);
+                           char data[100];
+                           spotJSON(parkingSpot, data);
+                           char cwd[1024];
+                           spotJSON(parkingSpot, data);
+                           getcwd(cwd, 1024);
+                           strcat(cwd, "/files/beacon.txt");
+                           writeToFile(cwd, data);
+                           system("python src/updateFirebase.py");
 		       }
 		    }
 		}
@@ -467,6 +468,7 @@ int main()
 			   getcwd(cwd, 1024);
 			   strcat(cwd, "/files/beacon.txt");
 			   writeToFile(cwd, data);
+                           system("python src/updateFirebase.py");
 		       }
 		    }
 		}

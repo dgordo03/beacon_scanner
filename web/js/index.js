@@ -1,23 +1,22 @@
-var dataLoaded;
-function loadData()
-{
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-           dataLoaded = xhttp.responseText;
-           jsonParse(xhttp.responseText);
-        }
+(function() {
+
+    // Initialize Firebase
+    var config = {
+        apiKey: "AIzaSyA-sKN3yMLlrP_IUDulFAc69OwquLIRVN0",
+        authDomain: "beacon-scanner-c41dc.firebaseapp.com",
+        databaseURL: "https://beacon-scanner-c41dc.firebaseio.com",
+        projectId: "beacon-scanner-c41dc",
+        storageBucket: "beacon-scanner-c41dc.appspot.com",
+        messagingSenderId: "481630920238"
     };
-    xhttp.open('get', 'https://raw.githubusercontent.com/dgordo03/beacon_scanner/master/files/beacon.txt');
-    xhttp.send();
-}
+    firebase.initializeApp(config);
+    
+    //create reference for entire database
+    const dbRefObject = firebase.database().ref();
 
-function jsonParse(toParse)
-{
-   var obj = JSON.parse(toParse);
-   console.log(obj);
-}
-
-setInterval(function () {
-  loadData();
-}, 1000);
+    //sync changes to any entry in the database
+    dbRefObject.on('value', snap => {
+        //do stuff with snap.val()
+        console.log(snap.val());
+    });
+}());

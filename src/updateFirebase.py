@@ -24,6 +24,7 @@ def firebaseUpdate(name, data):
         firebaseWrite(name, data)
 
 #create the dictionary
+
 name = sys.argv[1]
 data = sys.argv[2]
 splitComma = data.split(",")
@@ -31,15 +32,12 @@ entry = {}
 for line in splitComma:
     splitEquals = line.split("=")
     entry[splitEquals[0]] = splitEquals[1]
-
 firebase = firebase.FirebaseApplication('https://beacon-scanner-c41dc.firebaseio.com/')
 if entry['parked'] == 'true':
     firebaseUpdate(name, entry)
 else:
     result = firebaseGet(name)
-    if result == None:
-        firebaseWrite(name, data)
-    else:
+    if result != None:
         for key in result:
             deleteKey = key
         firebaseDelete(name, deleteKey)

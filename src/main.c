@@ -29,8 +29,8 @@ typedef struct {
 
 int beaconCount2;
 int rssiTotal2;
-int beaconCount1;
-int rssiTotal1;
+int beaconCount;
+int rssiTotal;
 long counter;
 float maxDistance = 7.0;
 int noSpot = -10;
@@ -82,7 +82,6 @@ int newLocation(Beacon beacon)
 	        newSpot.column = beacon.major;
 	    }
             newSpot.count++;
-		    printf("have a spot : %d\n", newSpot.count);
 	}
 	else if (newSpot.row < 0)
 	{
@@ -102,53 +101,64 @@ int newLocation(Beacon beacon)
 	    }
 	    else
 	    {
-		    printf("have a spot : %d\n", newSpot.count);
 	        newSpot.count++;
 	    }
 	}
     }
     else
     {
-	if (newSpot.row < 0)
-	{
-	    newSpot.count++;
-            //printf("no spot : %d\n", newSpot.count);
-	}
-	else if (beacon.minor != newSpot.row)
-	{
-	    newSpot.count++;
-            //printf("no spot : %d\n", newSpot.count);
-	}
-	else
+	if (newSpot.row > -1)
 	{
 	    newSpot.count = 0;
 	    newSpot.column = noSpot;
 	    newSpot.row = noSpot;
 	    newSpot.distance = 0.0;
 	}
+	else
+	{
+	    newSpot.count++;
+	}
     }
 	if (parkingSpot.row != newSpot.row && counter > parkingSpot.counter)
 	{
 	    updateLocation = 1;
-	    if (newSpot.distance <= maxDistance && newSpot.distance > 0.0 && newSpot.count > 25)
+	    if (newSpot.distance <= maxDistance && newSpot.distance > 0.0 && newSpot.count > 20)
 	    {
-		printf("%d\t%d\n", newSpot.row, parkingSpot.row);
 	        parkingSpot.row = newSpot.row;
 	        parkingSpot.column = newSpot.column;
 	        parkingSpot.isParked = 1;
 	        parkingSpot.distance = newSpot.distance;
 	        parkingSpot.counter = counter;
+
+                newSpot.row = -1;
+	        newSpot.count = 0;
+	        newSpot.column = -1;
+	        newSpot.distance = 0.0;
 	    }
-	    else if (newSpot.count > 10)
+	    else if (newSpot.count > 25)
 	    {
-		printf("%d\t%d\n", newSpot.row, parkingSpot.row);
 	        parkingSpot.row = noSpot;
 	        parkingSpot.column = noSpot;
 	        parkingSpot.isParked = 0;
 	        parkingSpot.distance = 0.0;
 	        parkingSpot.counter = counter;
+
+                newSpot.row = -1;
+                newSpot.count = 0;
+                newSpot.column = -1;
+                newSpot.distance = 0.0;
 	    }
-    }
+	}
+	if (beacon.minor == 1)
+	{
+		rssiTotal+=beacon.rssi;
+		beaconCount++;
+	}
+	else if (beacon.minor ==2)
+	{
+		rssiTotal2 += beacon.rssi;
+		beaconCount2++;
+	}
     return updateLocation;
 }
 
@@ -375,17 +385,17 @@ Beacon parseiBeacon(char *rawData)
 	iBeacon.minor = hexToDec(minor, 4);
 	twosComplementHex(rssi, 2);
 	iBeacon.rssi = hexToDec(rssi, 2);
-	iBeacon.power = 62;
-	iBeacon.n = 2;
+	iBeacon.power = 40;
+	iBeacon.n = 4;
     }
     return iBeacon;
 }
 
 int main()
 {
-    beaconCount1=0;
+    beaconCount=0;
     beaconCount2=0;
-    rssiTotal1=0;
+    rssiTotal=0;
     rssiTotal2=0;
     char *fileLoc;
     char *fileName;
@@ -435,7 +445,6 @@ int main()
 		       newParkLoc = newLocation(beacon);
 		       if (newParkLoc == 1)
 		       {
-			       printf("old : %d\t new : %d\n", oldParkingSpot.row, parkingSpot.row);
 			   if (oldParkingSpot.row != parkingSpot.row)
 			   {
                                char data[100];
@@ -484,6 +493,7 @@ int main()
 	        iBeaconBool = 0;
 	    }
 	    if (iBeaconBool == 1)
+
 	    {
                 curBeacon[index] = curChar;
 	        index++;
@@ -492,14 +502,5 @@ int main()
 	fclose(fp);
 	counter = 0;
     }
-    printf("rssi 1 avg : %f\n", (double)rssiTotal1/(double)beaconCount1);
-    printf("rssi 2 avg : %f\n", (double)rssiTotal2/(double)beaconCount2);
     return 0;
 }
-
-/* This is how to print to the correct file
-char cwd[1024];
-getcwd(cwd, 1024);
-strcat(cwd, "/files/fileName");
-writeToFile(cwd, "string");
-*/

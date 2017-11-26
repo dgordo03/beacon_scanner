@@ -33,7 +33,7 @@ int beaconCount;
 int rssiTotal;
 long counter;
 float maxDistance = 7.0;
-int noSpot = -10;
+int noSpot = -1;
 ParkingSpot parkingSpot;
 ParkingSpot oldParkingSpot;
 ConsistentSpot newSpot;
@@ -71,85 +71,82 @@ int newLocation(Beacon beacon)
     int updateLocation;
     dist = distance(beacon);
     updateLocation = 0;
+    if (counter < parkingSpot.counter)
+    {
+	return 0;
+    }
     if (dist <= maxDistance)
     {
-        if (beacon.minor == newSpot.row)
+	if (newSpot.row < 0)
 	{
-            if (newSpot.distance > dist)
-            {
-	        newSpot.distance = dist;
-	        newSpot.row = beacon.minor;
-	        newSpot.column = beacon.major;
-	    }
-            newSpot.count++;
-	}
-	else if (newSpot.row < 0)
-	{
-	    newSpot.distance = dist;
+            newSpot.distance = dist;
 	    newSpot.row = beacon.minor;
 	    newSpot.column = beacon.major;
 	    newSpot.count = 1;
+	}
+	else if (beacon.minor == newSpot.row)
+	{
+	    if (dist < newSpot.distance)
+	    {
+                newSpot.distance = dist;
+	    }
+	    newSpot.count++;
 	}
 	else
 	{
             if (dist < newSpot.distance)
 	    {
-	        newSpot.count = 1;
-		newSpot.column = beacon.major;
+	        newSpot.distance = dist;
 		newSpot.row = beacon.minor;
-		newSpot.distance = dist;
+		newSpot.column = beacon.major;
+		newSpot.count++;
 	    }
 	    else
 	    {
-	        newSpot.count++;
+		newSpot.count++;
 	    }
 	}
     }
     else
     {
-	if (newSpot.row > -1)
+	if (newSpot.row == beacon.minor)
 	{
-	    newSpot.count = 0;
+	    newSpot.count = 1;
 	    newSpot.column = noSpot;
 	    newSpot.row = noSpot;
-	    newSpot.distance = 0.0;
+	    newSpot.distance = dist;
 	}
 	else
 	{
-	    newSpot.count++;
+            newSpot.count++;
 	}
     }
-	if (parkingSpot.row != newSpot.row && counter > parkingSpot.counter)
+    printf("count: %d\n",newSpot.count);
+    printf("row: %d\n",newSpot.row);
+    if (newSpot.count > 20)
+    {
+        if (newSpot.row != parkingSpot.row)
 	{
 	    updateLocation = 1;
-	    if (newSpot.distance <= maxDistance && newSpot.distance > 0.0 && newSpot.count > 20)
-	    {
-	        parkingSpot.row = newSpot.row;
-	        parkingSpot.column = newSpot.column;
-	        parkingSpot.isParked = 1;
-	        parkingSpot.distance = newSpot.distance;
-	        parkingSpot.counter = counter;
-
-                newSpot.row = -1;
-	        newSpot.count = 0;
-	        newSpot.column = -1;
-	        newSpot.distance = 0.0;
-	    }
-	    else if (newSpot.count > 25)
-	    {
-	        parkingSpot.row = noSpot;
-	        parkingSpot.column = noSpot;
-	        parkingSpot.isParked = 0;
-	        parkingSpot.distance = 0.0;
-	        parkingSpot.counter = counter;
-
-                newSpot.row = -1;
-                newSpot.count = 0;
-                newSpot.column = -1;
-                newSpot.distance = 0.0;
-	    }
 	}
-	if (beacon.minor == 1)
+        if (newSpot.row == noSpot)
+	{
+            parkingSpot.row = noSpot;
+	    parkingSpot.column = noSpot;
+	    parkingSpot.isParked = 0;
+	    parkingSpot.distance = 0.0;
+	    parkingSpot.counter = counter;
+	}
+	else
+	{
+	    parkingSpot.row = newSpot.row;
+	    parkingSpot.column = newSpot.column;
+	    parkingSpot.distance = newSpot.distance;
+	    parkingSpot.isParked = 1;
+	    parkingSpot.counter = counter;
+	}
+    }
+	/*if (beacon.minor == 1)
 	{
 		rssiTotal+=beacon.rssi;
 		beaconCount++;
@@ -158,7 +155,7 @@ int newLocation(Beacon beacon)
 	{
 		rssiTotal2 += beacon.rssi;
 		beaconCount2++;
-	}
+	}*/
     return updateLocation;
 }
 
@@ -408,16 +405,16 @@ int main()
     index = 0;
     beacon_config = 0;
     parkingSpot.isParked = 0;
-    parkingSpot.row = -1;
-    parkingSpot.column = -1;
+    parkingSpot.row = -10;
+    parkingSpot.column = -10;
     parkingSpot.distance = 0.0;
     parkingSpot.counter = 0;
-    newSpot.row = -1;
-    newSpot.column = -1;
+    newSpot.row = -10;
+    newSpot.column = -10;
     newSpot.count = 0;
     newSpot.distance = 0.0;
-    oldParkingSpot.row = -1;
-    oldParkingSpot.column = -1;
+    oldParkingSpot.row = -10;
+    oldParkingSpot.column = -10;
     counter = 0;
     int asciiChar;
     int iBeaconBool = 0;
@@ -445,8 +442,8 @@ int main()
 		       newParkLoc = newLocation(beacon);
 		       if (newParkLoc == 1)
 		       {
-			   if (oldParkingSpot.row != parkingSpot.row)
-			   {
+			   //if (oldParkingSpot.row != parkingSpot.row)
+			   //{
                                char data[100];
                                formatString(parkingSpot, data);
                                char cwd[1024];
@@ -457,7 +454,7 @@ int main()
                                system(cmd);
 			       oldParkingSpot.row = parkingSpot.row;
 			       oldParkingSpot.column = parkingSpot.column;
-			   }
+			   //}
                        }
 		    }
 		}
